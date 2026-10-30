@@ -1,0 +1,11 @@
+{
+  "name": "attacker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server.ts",
+    "start": "node src/server.ts",
+    "test": "node --test src/server.test.ts"
+  }
+}
