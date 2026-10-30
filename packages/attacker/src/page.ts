@@ -196,10 +196,50 @@ export const trapPage = (victimOrigin: string): string => `<!doctype html>
       .trap.show-marker .align-marker {
         display: block;
       }
+
+      /* ---- panel show/hide ---- */
+      .panel-hide {
+        width: 100%;
+        margin-bottom: 14px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #334155;
+        background: #1e293b;
+        color: #e2e8f0;
+        font-size: 13px;
+        cursor: pointer;
+      }
+      .panel-show {
+        display: none;
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 30;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid rgba(15, 23, 42, 0.25);
+        background: rgba(15, 23, 42, 0.82);
+        color: #f8fafc;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+      body.panel-hidden .panel {
+        display: none;
+      }
+      body.panel-hidden .panel-show {
+        display: block;
+      }
     </style>
   </head>
   <body>
+    <button class="panel-show" id="panel-show" type="button">☰ パネルを表示</button>
+
     <aside class="panel">
+      <button class="panel-hide" id="panel-hide" type="button">
+        « パネルを隠す（利用者から見えるページにする）
+      </button>
       <h2>クリックジャッキング デモ（発表用パネル）</h2>
       <p class="sub">このパネルは解説用です。実際の攻撃ページには存在しません。</p>
 
@@ -294,6 +334,25 @@ export const trapPage = (victimOrigin: string): string => `<!doctype html>
       $("toggle-marker").addEventListener("click", () => {
         trap.classList.toggle("show-marker");
       });
+
+      // Show/hide the presenter panel. Hiding it leaves only the "prize" page —
+      // exactly what a real victim would see. The choice is remembered locally.
+      const PANEL_KEY = "clickjack-demo-panel-hidden";
+      const setPanelHidden = (hidden) => {
+        document.body.classList.toggle("panel-hidden", hidden);
+        try {
+          localStorage.setItem(PANEL_KEY, hidden ? "1" : "0");
+        } catch {
+          /* ignore storage errors (private mode, etc.) */
+        }
+      };
+      try {
+        if (localStorage.getItem(PANEL_KEY) === "1") setPanelHidden(true);
+      } catch {
+        /* ignore */
+      }
+      $("panel-hide").addEventListener("click", () => setPanelHidden(true));
+      $("panel-show").addEventListener("click", () => setPanelHidden(false));
 
       $("decoy").addEventListener("click", () => {
         // The decoy is purely visual: the real click lands on the iframe above it.
